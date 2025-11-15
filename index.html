@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Despensa</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-weight: 300;
+        }
+        /* "Janela" da câmera */
+        #leitor {
+            width: 100%;
+            max-width: 500px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        /* Botão principal de Ação */
+        #modo-btn {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        /* Mensagem de feedback */
+        #status-msg {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #aaa;
+            height: 30px; /* Altura fixa para não "pular" */
+            text-align: center;
+        }
+        
+        /* Classes que o JavaScript vai adicionar ao botão */
+        .add-mode {
+            background-color: #28a745; /* Verde */
+            color: white;
+        }
+        .remove-mode {
+            background-color: #dc3545; /* Vermelho */
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gestor da Despensa</h1>
+
+    <div id="leitor"></div>
+
+    <button id="modo-btn" class="add-mode">Modo: ADICIONAR</button>
+
+    <div id="status-msg">Aponte para um código de barras</div>
+
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <script src="app.js"></script>
+    
+</body>
+</html>
