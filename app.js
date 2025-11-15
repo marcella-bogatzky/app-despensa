@@ -12,12 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentMode = "add";    // "add" ou "remove"
     let isSending = false;      // "Trava" para evitar scans duplicados
     let messageTimer;           // Usado para limpar mensagens de status
-
-
+    
     // --- REFERÊNCIAS AOS ELEMENTOS HTML ---
     
     const modoBtn = document.getElementById("modo-btn");
     const statusMsg = document.getElementById("status-msg");
+
+    // Referência do campo de senha
+    const passwordInput = document.getElementById("secret-password-input");
 
 
     // --- LÓGICA DO BOTÃO DE MODO ---
@@ -43,14 +45,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Função que "conversa" com a planilha do Google
     async function sendDataToSheet(codigoLido) {
-        
+    
         // 1. Mostra feedback imediato
         statusMsg.textContent = "Enviando dados...";
 
-        // 2. Prepara os dados para enviar (ex: {"codigo": "789...", "modo": "add"})
+        // Feedback utilizando as classes de CSS
+        statusMsg.classList.remove('success', 'error');
+        
+        // 2. Prepara os dados para enviar (código, modo e senha)
         const payload = {
             codigo: codigoLido,
-            modo: currentMode
+            modo: currentMode,
+            senha: passwordInput.value
         };
 
         // 3. Bloco try/catch para lidar com erros de rede
@@ -60,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "POST",
                 body: JSON.stringify(payload),
                 headers: {
-                    "Content-Type": "text/plain;charset=utf-8"
+                    "Content-Type": "text/plain;charset=utf-8" 
                 },
                 // O 'redirect' é necessário para o Apps Script
                 redirect: "follow" 
@@ -69,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // 5. Pega a resposta do Google (JSON no Apps Script)
             const result = await response.json();
 
-            // 6. Mostra a mensagem de sucesso 
+            // 6. Mostra a mensagem de sucesso ou retorno de "Senha incorreta."
             if (result.status === "success") {
                 showStatusMessage(`✅ ${result.message} (Total: ${result.novaQuantidade})`, false);
             } else {
@@ -79,10 +85,10 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             // 7. Mostra uma mensagem de erro de rede
             console.error("Erro ao enviar 'fetch':", error);
-            showStatusMessage("❌ Erro de conexão.", true);
+            showStatusMessage("❌ Erro de conexão com a planilha.", true);
         } finally {
             // 8. "Destrava" o scanner para permitir o próximo scan
-            // Isso acontece depois de 1.5 segundos para evitar scans múltiplos
+            // Depois de 1.5 segundos para evitar scans múltiplos
             setTimeout(() => {
                 isSending = false;
                 // Limpa a mensagem se não houver mais scans
@@ -96,18 +102,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- FUNÇÃO DE FEEDBACK ---
     
+    // Atualizada para usar as classes de CSS do novo layout
     function showStatusMessage(message, isError = false) {
-        // Limpa qualquer timer anterior
         clearTimeout(messageTimer);
         
         statusMsg.textContent = message;
-        statusMsg.style.color = isError ? "#dc3545" : "#28a745"; // Vermelho ou Verde
+        statusMsg.classList.remove('success', 'error'); // Limpa classes
+        if (isError) {
+            statusMsg.classList.add('error');
+        } else {
+            statusMsg.classList.add('success');
+        }
 
-        // Define um timer para limpar a mensagem após 5 segundos
         messageTimer = setTimeout(() => {
-            if (!isSending) { // Só limpa se não estiver no meio de um envio
+            if (!isSending) { 
                 statusMsg.textContent = "Aponte para um código de barras";
-                statusMsg.style.color = "#aaa";
+                statusMsg.classList.remove('success', 'error');
             }
         }, 5000);
     }
@@ -115,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- LÓGICA DO SCANNER ---
 
-    // Função chamada pela biblioteca quando um código é lido
+    // Limpa a mensagem se não houver mais scans
     function onScanSuccess(codigoLido, decodedResult) {
         // Se já estamos enviando um item, ignore este scan
         if (isSending) {
@@ -125,9 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // 1. "Trava" o scanner para evitar scans duplicados
         isSending = true;
         
-        // 2. Vibra o celular para dar feedback (ótimo no mobile!)
+        // 2. Vibra o celular para dar feedback
         if (navigator.vibrate) {
-            navigator.vibrate(100); // Vibra por 100ms
+            navigator.vibrate(100);  // Vibra por 100ms
         }
 
         // 3. Chama a função que envia os dados para a planilha
@@ -147,12 +157,12 @@ document.addEventListener("DOMContentLoaded", () => {
         {
             fps: 10, // Frames por segundo
             qrbox: { width: 250, height: 250 }, // Tamanho da "caixa" de scan
-            rememberLastUsedCamera: true // Lembra qual câmera usar (frontal/traseira)
+            rememberLastUsedCamera: true // Tamanho da "caixa" de scan
         },
         false // 'false' para verbosidade
     );
 
-    // Inicia o scanner
+    // 'false' para verbosidade
     html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     showStatusMessage("Scanner iniciado. Pronto!");
 
