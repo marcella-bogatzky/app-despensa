@@ -147,16 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
         {
             fps: 10, // Frames por segundo
             qrbox: { width: 250, height: 250 }, // Tamanho da "caixa" de scan
-            rememberLastUsedCamera: true, // Lembra qual câmera usar (frontal/traseira)
-            supportedScanTypes: [ // Diz para focar em códigos de barras
-                Html5QDScannerSupportedFormats.EAN_13,
-                Html5QDScannerSupportedFormats.UPC_A,
-                Html5QDScannerSupportedFormats.EAN_8,
-                Html5QDScannerSupportedFormats.UPC_E,
-                Html5QDScannerSupportedFormats.QR_CODE // Mantém o QR Code
-            ]
+            rememberLastUsedCamera: true // Lembra qual câmera usar (frontal/traseira)
         },
-        false // 'false' para verbosidade (não polui o console)
+        false // 'false' para verbosidade
     );
 
     // Inicia o scanner
