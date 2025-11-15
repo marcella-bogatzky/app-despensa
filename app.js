@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "POST",
                 body: JSON.stringify(payload),
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "text/plain;charset=utf-8"
                 },
                 // O 'redirect' é necessário para o Apps Script
                 redirect: "follow" 
