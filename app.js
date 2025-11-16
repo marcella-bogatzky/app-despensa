@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (currentMode === "add") {
             // Muda para o modo REMOVER
             currentMode = "remove";
-            modoBtn.textContent = "Modo: REMOVER";
+            modoBtn.textContent = "REMOVER";
             modoBtn.classList.remove("add-mode");
             modoBtn.classList.add("remove-mode");
         } else {
