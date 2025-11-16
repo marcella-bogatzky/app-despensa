@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             // Muda para o modo ADICIONAR
             currentMode = "add";
-            modoBtn.textContent = "Modo: ADICIONAR";
+            modoBtn.textContent = "ADICIONAR";
             modoBtn.classList.remove("remove-mode");
             modoBtn.classList.add("add-mode");
         }
