@@ -18,7 +18,7 @@
 // você DEVE alterar o nome deste cache (ex: 'despensa-cache-v3').
 // Isso força o navegador a rodar o evento 'install' novamente e
 // baixar os arquivos novos, e depois o 'activate' para limpar o cache antigo (v2).
-const CACHE_NAME = 'despensa-cache-v2';
+const CACHE_NAME = 'despensa-cache-v3';
 
 // Lista de arquivos essenciais ("App Shell") que farão o app funcionar offline.
 // Todos esses arquivos serão baixados durante a etapa 'install'.
