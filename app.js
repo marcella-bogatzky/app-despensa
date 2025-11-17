@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (result.status === "success") {
                 // Sucesso: item encontrado e atualizado
-                showStatusMessage(`Guardado! 🍑 (Total: ${result.novaQuantidade})`, false);
+                showStatusMessage(`Atualizado! 🍑 (Total: ${result.novaQuantidade})`, false);
                 resetSendingLock(); // Libera a trava
             } else if (result.status === "not_mapped") {
                 // Item não encontrado: precisa mapear
