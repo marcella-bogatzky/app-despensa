@@ -5,13 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Despensa</title>
 
-    <!-- Definições de Estilo-->
+    <link rel="manifest" href="manifest.webmanifest">
+    
+    <meta name="theme-color" content="#FFDAB9">
+    
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /*Estilo do Front Principal */
+        /* * =======================================================
+         * CSS EMBUTIDO (Internal Stylesheet)
+         * =======================================================
+         * Todo o estilo da aplicação está definido aqui.
+         * Para um projeto maior, isso poderia ser movido para um arquivo .css separado.
+         */
+
+        /* --- Animação de Carregamento (usada no 'app.js') --- */
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .spinning-peach {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        /* --- Estilo Geral (Tema Pêssego) --- */
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #2c2c2c;
-            color: #f0f0f0;
+            font-family: 'Nunito', sans-serif;
+            background-color: #FFF7E8; /* Creme */
+            color: #5D4037; /* Marrom Escuro */
             margin: 0;
             padding: 20px;
             display: flex;
@@ -21,96 +48,186 @@
             box-sizing: border-box;
         }
         h1 {
-            width: 100;
-            font-weight: 600;
-            font-size: 2.em;
+            width: 100%;
+            font-family: 'Fredoka One', cursive; 
+            font-weight: 400; /* Fredoka One já é bold */
+            font-size: 2.5em;
             margin-bottom: 30px;
-            color: #FFDAB9; /* Pêssego */
-            text-shadow: 0 0 15px rgba(255, 218, 185, 0.4);
+            color: #FF7A59; /* Pêssego Principal */
+            text-shadow: 0 2px 4px rgba(93, 64, 55, 0.2);
             text-align: center;
         }
-        /* "Janela" da câmera */
+
+        /* --- Navegação por Abas (Scanner / Lista) --- */
+        .nav-tabs {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            margin-bottom: 25px;
+            background-color: #EFEBE9; /* Bege Claro */
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            padding: 5px;
+        }
+        .nav-button {
+            flex: 1;
+            padding: 15px 10px;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #795548; /* Marrom Médio */
+            background-color: transparent;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        /* A classe '.active' é adicionada/removida via JavaScript */
+        .nav-button.active {
+            color: white;
+            background-color: #FF7A59; /* Pêssego Principal */
+            text-shadow: none;
+            box-shadow: 0 2px 8px rgba(255, 122, 89, 0.4);
+        }
+
+        /* --- Contêiner das Abas --- */
+        .tab-content { width: 100%; max-width: 500px; }
+        .tab-pane { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        /* A classe '.hidden' é adicionada/removida via JavaScript para trocar de aba */
+        .tab-pane.hidden { display: none; }
+
+        /* --- Seção do Scanner --- */
+        /* Este é o 'div' onde a biblioteca html5-qrcode injeta o vídeo da câmera */
         #leitor {
             width: 100%;
             max-width: 500px;
-            border: 2px solid #555;
-            border-radius: 12px;
+            border: 3px solid #FFB7B2; /* Pêssego Claro */
+            border-radius: 24px;
             overflow: hidden;
             margin-bottom: 25px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            background-color: #3a3a3a;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            background-color: #EFEBE9; /* Bege Claro */
         }
-        /* Botão principal de Ação */
+        /* Botão principal (ADICIONAR / REMOVER) */
         #modo-btn {
             width: 100%;
             max-width: 500px;
-            padding: 22px;
+            padding: 20px;
             font-size: 1.3em;
-            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
             border: none;
-            border-radius: 12px;
+            border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
         }
-        /* Mensagem de feedback */
+        /* Mensagem de feedback (Ex: "Item salvo!") */
         #status-msg {
             margin-top: 10px;
             font-size: 1.1em;
-            color: #f0f0f0;
-            height: 30px; /* Altura fixa para não "pular" */
+            color: #5D4037; /* Marrom Escuro */
+            height: 30px; 
             text-align: center;
-            font-weight: 400;
+            font-weight: 600;
             transition: color 0.3s ease;
         }
         
-        /* Classes que o JavaScript vai adicionar ao botão */
+        /* Classes de estilo para o botão (controladas via JS) */
         .add-mode {
-            background: linear-gradient(135deg, #FF9A8B 0%, #FF6A88 100%);
+            background: linear-gradient(135deg, #FF7A59 0%, #FFB7B2 100%); /* Pêssego -> Rosa */
             color: white;
         }
-        .add-mode:hover {
-            transform: translateY(-2px);
-        }
+        .add-mode:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 122, 89, 0.4); }
         .remove-mode {
-            background: linear-gradient(135deg, #FF5F6D 0%, #FFC371 100%);
+            background: linear-gradient(135deg, #FFB7B2 0%, #FF7A59 100%); /* Rosa -> Pêssego */
             color: white;
         }
-        .remove-mode:hover {
-            transform: translateY(-2px);
-        }
-        /* Classes para as cores das mensagens de status */
+        .remove-mode:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 122, 89, 0.4); }
+
+        /* Classes de estilo para o status (controladas via JS) */
         #status-msg.success {
-            color: #82E0AA; /* Verde claro */
+            color: #00C896; /* Verde Menta */
         }
         #status-msg.error {
-            color: #F1948A; /* Vermelho claro */
+            color: #E94E79; /* Rosa/Vermelho (Erro) */
         }
 
-        /* Estilo para o campo de senha */
+        /* --- Aba "Lista de Compras" --- */
+        #secao-lista p {
+            font-size: 1.1em;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        /* Estilo base dos botões da segunda aba */
+        .lista-btn {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            font-size: 1.3em;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+            text-decoration: none; 
+            text-align: center;
+            box-sizing: border-box; 
+            text-transform: uppercase;
+        }
+        .lista-btn:hover { transform: translateY(-2px); }
+        
+        /* Botão de Sincronizar com Notion */
+        #btn-sincronizar-notion {
+            background: linear-gradient(135deg, #FF7A59 0%, #FFB7B2 100%);
+            box-shadow: 0 6px 20px rgba(255, 122, 89, 0.4);
+        }
+
+        /* Botão/Link para Ver a lista no Notion */
+        #btn-ver-notion {
+             background: #5D4037; /* Marrom Escuro */
+        }
+
+        /* Botão de Instalar PWA (controlado via JS) */
+        #btn-instalar-pwa {
+            background: linear-gradient(135deg, #00C896 0%, #00BFA5 100%);
+            margin-top: 10px;
+        }
+
+        /* --- Campo de Senha --- */
+        /* Usado para autenticar as requisições ao Google Apps Script / Notion */
         #secret-password-input {
             width: 60%;
             max-width: 500px;
             padding: 15px 20px;
             font-size: 1em;
-            border: 1px solid #555;
-            border-radius: 10px;
-            background-color: #3a3a3a;
-            color: #f0f0f0;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
-            transition: border-color 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            border: 2px solid #EFEBE9; /* Bege Claro */
+            border-radius: 50px;
+            background-color: #EFEBE9;
+            color: #5D4037;
+            box-shadow: none;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            text-align: center;
         }
         #secret-password-input:focus {
             outline: none;
-            border-color: #FFDAB9; /* Borda pêssego no foco */
-            box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 218, 185, 0.5);
+            border-color: #FFB7B2; /* Pêssego Claro */
+            background-color: #FFF7E8;
+            box-shadow: 0 0 10px rgba(255, 122, 89, 0.2);
         }
-        /* --- Estilo do Modal de Mapeamento --- */
-        /* O fundo escurecido */
+
+        /* --- Modal de Mapeamento (Cadastro de novos itens) --- */
+        /* O '.modal-overlay' é o fundo escuro/transparente */
         .modal-overlay {
-            display: none; /* Escondido por padrão */
+            display: none; /* O JS muda para 'flex' para exibir */
             position: fixed;
             z-index: 100;
             left: 0;
@@ -118,106 +235,70 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(93, 64, 55, 0.6); /* Fundo Marrom translúcido */
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             align-items: center;
             justify-content: center;
         }
-        
-        /* A caixa do pop-up */
+        /* O '.modal-content' é a caixa branca no centro */
         .modal-content {
-            background-color: #3a3a3a;
+            background-color: #FFF7E8; /* Creme */
             margin: auto;
             padding: 25px;
-            border: 1px solid #555;
-            border-radius: 12px;
+            border: none;
+            border-radius: 24px;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Espaçamento entre os itens */
+            gap: 15px;
         }
-        
-        .modal-content h2 {
-            margin: 0;
-            color: #FFDAB9;
-            font-size: 1.4em;
-            text-align: center;
-        }
-        
-        .modal-content p {
-            margin: 0;
-            font-size: 0.9em;
-            color: #f0f0f0;
-            text-align: center;
-        }
-        
-        /* Mostra o código de barras lido */
+        /* Estilos dos elementos dentro do modal */
+        .modal-content h2 { margin: 0; color: #FF7A59; font-size: 1.4em; text-align: center; }
+        .modal-content p { margin: 0; font-size: 0.9em; color: #5D4037; text-align: center; }
         #mapping-barcode {
             font-family: 'Courier New', Courier, monospace;
             font-size: 1.1em;
-            color: #FFC371;
-            background-color: #2c2c2c;
+            color: #FF7A59;
+            background-color: #EFEBE9;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 12px;
             text-align: center;
             word-break: break-all;
         }
-        
-        /* Lista dropdown */
         #mapping-item-list {
             width: 100%;
             padding: 15px;
             font-size: 1em;
-            font-family: 'Montserrat', sans-serif;
-            border: 1px solid #555;
-            border-radius: 10px;
-            background-color: #4a4a4a;
-            color: #f0f0f0;
+            font-family: 'Nunito', sans-serif;
+            border: 2px solid #EFEBE9;
+            border-radius: 12px;
+            background-color: #EFEBE9;
+            color: #5D4037;
         }
-        #mapping-item-list:focus {
-            outline: none;
-            border-color: #FFDAB9;
-        }
-        
-        /* Botões do modal */
-        .modal-buttons {
-            display: flex;
-            gap: 10px; /* Espaço entre botões */
-            margin-top: 10px;
-        }
-        
+        #mapping-item-list:focus { outline: none; border-color: #FFB7B2; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
         .modal-buttons button {
-            flex: 1; /* Faz os botões dividirem o espaço */
+            flex: 1;
             padding: 15px;
             font-size: 1.1em;
-            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
             border: none;
-            border-radius: 10px;
+            border-radius: 50px;
             cursor: pointer;
             transition: all 0.2s ease;
+            text-transform: uppercase;
         }
-        
-        /* Botão Associar */
         #mapping-associate-btn {
-            background: linear-gradient(135deg, #FF9A8B 0%, #FF6A88 100%);
+            background: linear-gradient(135deg, #FF7A59 0%, #FFB7B2 100%);
             color: white;
         }
-        #mapping-associate-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-        
-        /* Botão Cancelar (Cinza) */
-        #mapping-cancel-btn {
-            background-color: #666;
-            color: #f0f0f0;
-        }
-        #mapping-cancel-btn:hover {
-            background-color: #777;
-        }
+        #mapping-associate-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        #mapping-cancel-btn { background-color: #EFEBE9; color: #795548; }
+        #mapping-cancel-btn:hover { background-color: #D7CCC8; }
         
     </style>
 </head>
@@ -225,11 +306,43 @@
 
     <h1>Residência Pêssego 🍑</h1>
 
-    <div id="leitor"></div>
+    <nav class="nav-tabs">
+        <button class="nav-button active" id="nav-scanner">Scanner</button>
+        <button class="nav-button" id="nav-lista">Lista de Compras</button>
+    </nav>
 
-    <button id="modo-btn" class="add-mode">ADICIONAR</button>
+    <div class="tab-content">
 
-    <div id="status-msg">Aponte para um código de barras</div>
+        <section id="secao-scanner" class="tab-pane">
+            
+            <div id="leitor"></div>
+            
+            <button id="modo-btn" class="add-mode">ADICIONAR</button>
+            
+            <div id="status-msg">Aponte para um código de barras</div>
+        </section>
+
+        <section id="secao-lista" class="tab-pane hidden">
+            <p>Sincronize sua "Lista de Compras" da planilha com o Notion.</p>
+            
+            <button id="btn-sincronizar-notion" class="lista-btn">
+                Sincronizar Lista
+            </button>
+            
+            <a id="btn-ver-notion" class="lista-btn" href="https://www.notion.so/Lista-de-Compras-1-2adc5ed80386805cabfad46c1a929379" target="_blank"> <!-- IMPORTANTE: PONTO DE CONFIGURAÇÃO !-->
+            <!-- Este é o link direto para a página do Notion onde a lista é exibida.
+            Altere o 'href' acima para o link da SUA página de Lista de Compras.-->
+                Ver Lista no Notion
+            </a>
+            
+
+            <button id="btn-instalar-pwa" class="lista-btn" style="display: none;">
+                Instalar Aplicativo
+            </button>
+
+        </section>
+
+    </div>
 
     <input type="password" id="secret-password-input" placeholder="Senha">
 
@@ -241,6 +354,7 @@
             <div id="mapping-barcode">[código de barras]</div>
             
             <p>Selecione o item genérico:</p>
+            
             <select id="mapping-item-list">
                 <option value="">Carregando itens...</option>
             </select>
@@ -251,9 +365,25 @@
             </div>
         </div>
     </div>
+    
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     
     <script src="app.js"></script>
-    
-</body>
+
+    <script>
+        // Verifica se o navegador do usuário suporta Service Workers
+        if ('serviceWorker' in navigator) {
+            // Quando a página terminar de carregar, tenta registrar o service worker
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./serviceworker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registrado com sucesso:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Falha ao registrar ServiceWorker:', error);
+                    });
+            });
+        }
+    </script>
+    </body>
 </html>
